@@ -1,37 +1,74 @@
-import { createContext, useContext, useState, useEffect } from "react"
+// src/context/AuthContext.jsx
+import { createContext, useContext, useState, useEffect } from 'react';
+import api from '../services/auth';
+import { getRoutePrefix } from '../utils/roleUtils';
+import { useNavigate } from 'react-router-dom';
 
-const AuthContext = createContext()
-export const useAuth = () => useContext(AuthContext)
+const AuthContext = createContext();
 
-const roles = ["doctor", "labtechnician", "pharmacist", "triage", "receptionist"]
+export function AuthProvider({ children }) {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
-export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null)
-  const [loading, setLoading] = useState(false)
+  useEffect(() => {
+    const loadUser = async () => {
+      try {
+        const userData = await api.getUserProfile();
+        setUser(userData);
+        
+        if (userData?.role) {
+          const routePrefix = getRoutePrefix(userData.role);
+          navigate(routePrefix);
+        }
+      } catch (error) {
+        console.error('Failed to load user:', error);
+        setUser(null);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  // Simulate login with a fixed role for testing
-  const login = () => {
-    // const randomRole = roles[Math.floor(Math.random() * roles.length)]
-    const userData = { name: "Test User", role: "triage" }
-    setUser(userData)
-    console.log("User logged in:", userData) // Debugging
-    // localStorage.setItem("user", JSON.stringify(userData)) // Uncomment if localStorage is used
-    return userData
-  }
+    loadUser();
+  }, [navigate]);
 
-  const logout = () => {
-    setUser(null)
-    // localStorage.removeItem("user") // Uncomment if localStorage is used
-    console.log("User logged out") // Debugging
-  }
+  const login = async (email, password, role) => {
+    try {
+      const userData = await api.login(email, password, role);
+      const profileData = await api.getUserProfile();
+      setUser(profileData);
+      
+      if (profileData?.role) {
+        const routePrefix = getRoutePrefix(profileData.role);
+        navigate(routePrefix);
+      } else {
+        navigate('/');
+      }
+      
+      return profileData;
+    } catch (error) {
+      console.error('Login error:', error);
+      throw error;
+    }
+  };
 
-  const value = {
-    user,
-    loading,
-    login,
-    logout,
-    isAuthenticated: !!user,
-  }
+  const logout = async () => {
+    try {
+      await api.logout();
+      setUser(null);
+      navigate('/login');
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
+  };
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
+  return (
+    <AuthContext.Provider value={{ user, login, logout, loading }}>
+      {children}
+    </AuthContext.Provider>
+  );
+}
+
+export function useAuth() {
+  return useContext(AuthContext);
 }

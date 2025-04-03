@@ -16,8 +16,8 @@ import { Toaster } from "sonner"
 function App() {
   return (
     // <ThemeProvider defaultTheme="light">
+    <Router>
       <AuthProvider>
-        <Router>
           <Routes>
             <Route path="/login" element={<Login />} />
             <Route path="/unauthorized" element={<Unauthorized />} />
@@ -47,9 +47,9 @@ function App() {
               <Route path="*" element={<Navigate to="/login" replace />} />
             </Route>
           </Routes>
-        </Router>
         <Toaster />
       </AuthProvider>
+    </Router>
     // </ThemeProvider>
   )
 }
