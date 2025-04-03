@@ -21,7 +21,7 @@ const Login = () => {
 
     try {
       if (email && password) {
-        let role = "doctor"
+        let role = "triage"
         // if (email.includes("doctor")) role = "doctor"
         // else if (email.includes("hospital")) role = "hospital_admin"
 
@@ -36,7 +36,6 @@ const Login = () => {
         toast.success(`Welcome back, ${userData.name}!`)
 
         const routePrefix = getRoutePrefix(role)
-        console.log("🚀 ~ handleSubmit ~ routePrefix:", routePrefix)
         navigate(routePrefix)
       } else {
         toast.error("Please enter both email and password")

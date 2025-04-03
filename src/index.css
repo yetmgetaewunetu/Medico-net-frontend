@@ -73,6 +73,12 @@
   body {
     @apply bg-background text-foreground;
   }
+  /* Ensure input text is black */
+  input,
+  textarea,
+  select {
+    @apply text-black;
+  }
 }
 
 .sidebar-gradient {

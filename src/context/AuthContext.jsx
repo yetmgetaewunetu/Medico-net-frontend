@@ -12,7 +12,7 @@ export const AuthProvider = ({ children }) => {
   // Simulate login with a fixed role for testing
   const login = () => {
     // const randomRole = roles[Math.floor(Math.random() * roles.length)]
-    const userData = { name: "Test User", role: "doctor" }
+    const userData = { name: "Test User", role: "triage" }
     setUser(userData)
     console.log("User logged in:", userData) // Debugging
     // localStorage.setItem("user", JSON.stringify(userData)) // Uncomment if localStorage is used

@@ -5,6 +5,9 @@ export const ROLES = {
   DOCTOR: "doctor",
   NURSE: "nurse",
   RECEPTIONIST: "receptionist",
+  LAB_TECHNICIAN: "labtechnician",
+  PHARMACIST: "pharmacist",
+  TRIAGE: "triage",
 }
 
 // Check if user has required role
@@ -32,6 +35,12 @@ export const getRoutePrefix = (role) => {
       return "/nurse"
     case ROLES.RECEPTIONIST:
       return "/receptionist"
+    case ROLES.LAB_TECHNICIAN:
+      return "/lab-technician"
+    case ROLES.PHARMACIST:
+      return "/pharmacist"
+    case ROLES.TRIAGE:
+      return "/triage"
     default:
       return "/login"
   }
