@@ -10,8 +10,11 @@ import ViewRecords from "../pages/admin/ViewRecords"
 import RecordAuditLogs from "../pages/admin/RecordAuditLogs"
 
 const AdminRoutes = () => {
-  const { user } = useAuth()
-
+  // const { user } = useAuth()
+  const user = {
+    role : "admin",
+    name : "admin"
+  }
   // Check if user is admin
   if (!user || user.role !== ROLES.ADMIN) {
     return <Navigate to="/unauthorized" replace />

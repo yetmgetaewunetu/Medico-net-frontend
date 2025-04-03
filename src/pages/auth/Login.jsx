@@ -1,12 +1,18 @@
-// src/pages/Login.js
 import { useState } from "react";
-
 import { useAuth } from "../../context/AuthContext";
 import { Button } from "../../components/ui/button";
 import { Input } from "../../components/ui/input";
 import { Label } from "../../components/ui/label";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../../components/ui/card";
+import { 
+  Card, 
+  CardContent, 
+  CardDescription, 
+  CardFooter, 
+  CardHeader, 
+  CardTitle 
+} from "../../components/ui/card";
 import { Toaster, toast } from "sonner";
+import { Loader2 } from "lucide-react";
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -14,11 +20,16 @@ const Login = () => {
     password: "",
     role: ""
   });
-  const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
-  
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  // const { login, error, clearError } = useAuth();
 
-  const roles = ["doctor", "labtechnician", "pharmacist", "triage", "receptionist"];
+  const roles = [
+    { value: "doctor", label: "Doctor" },
+    { value: "labtechnician", label: "Lab Technician" },
+    { value: "pharmacist", label: "Pharmacist" },
+    { value: "triage", label: "Triage Nurse" },
+    { value: "receptionist", label: "Receptionist" }
+  ];
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -30,36 +41,68 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
+    clearError();
+    
+    // Validate form
+    if (!formData.email || !formData.password || !formData.role) {
+      toast.error("Please fill all required fields");
+      return;
+    }
 
     try {
-      const { email, password, role } = formData;
+      setIsSubmitting(true);
+      const userData = await login(formData.email, formData.password, formData.role);
       
-      if (!email || !password || !role) {
-        throw new Error('Please fill all required fields');
-      }
-
-      // Call the login function from auth context
-      const userData = await login(email, password, role);
-      
-      toast.success(`Welcome, ${userData.firstName || userData.email}!`);
-      
+      // Show welcome message if login succeeds
+      toast.success(`Welcome back, ${userData.firstName || userData.email}!`, {
+        description: `You are logged in as ${userData.role}`
+      });
     } catch (err) {
-      toast.error(err.message || "Authentication failed. Please try again.");
+      // Handle specific error cases
+      if (err.message.includes("User not found")) {
+        toast.error("Account not found", {
+          description: "Please check your email or register for an account",
+          action: {
+            label: "Register",
+            onClick: () => {/* Navigate to registration page */}
+          }
+        });
+      } else if (err.message.includes("Invalid password")) {
+        toast.error("Incorrect password", {
+          description: "Please check your password and try again",
+          action: {
+            label: "Reset password",
+            onClick: () => {/* Navigate to password reset */}
+          }
+        });
+      } else if (err.message.includes("Access denied")) {
+        toast.error("Role mismatch", {
+          description: err.message
+        });
+      } else if (err.message.includes("NetworkError") || err.message.includes("Failed to fetch")) {
+        toast.error("Connection error", {
+          description: "Cannot connect to server. Please check your network and try again."
+        });
+      } else {
+        toast.error("Login failed", {
+          description: err.message || "Please try again later"
+        });
+      }
     } finally {
-      setLoading(false);
+      setIsSubmitting(false);
     }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#EAF7F8] to-[#D2EBED] px-4 sm:px-6 lg:px-8">
-      <Toaster position="top-center" />
+      <Toaster position="top-center" richColors expand={false} />
+      
       <div className="flex w-full max-w-6xl rounded-xl shadow-2xl overflow-hidden bg-white transform transition-all duration-300">
         {/* Image Section */}
         <div className="hidden md:flex flex-1 relative">
           <img 
             src="/hospital.jpg" 
-            alt="Healthcare Background"
+            alt="Healthcare professionals working"
             className="w-full h-full object-cover brightness-90"
           />
           <div className="absolute inset-0 bg-gradient-to-r from-blue-900/40 to-blue-800/30">
@@ -80,7 +123,6 @@ const Login = () => {
           </div>
         </div>
 
-
         {/* Form Section */}
         <div className="flex-1 flex justify-center items-center p-8 md:p-12">
           <Card className="w-full max-w-md border-none shadow-none bg-transparent">
@@ -99,7 +141,7 @@ const Login = () => {
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="space-y-3">
                   <Label htmlFor="role" className="text-gray-700 font-medium">
-                    Role
+                    Role *
                   </Label>
                   <select
                     id="role"
@@ -108,11 +150,12 @@ const Login = () => {
                     onChange={handleChange}
                     className="h-12 w-full focus:ring-2 ring-primary/50 border border-gray-300 rounded-lg px-4 bg-white appearance-none"
                     required
+                    disabled={isSubmitting}
                   >
                     <option value="">Select your role</option>
                     {roles.map((role) => (
-                      <option key={role} value={role}>
-                        {role.charAt(0).toUpperCase() + role.slice(1).replace(/technician/, " Technician")}
+                      <option key={role.value} value={role.value}>
+                        {role.label}
                       </option>
                     ))}
                   </select>
@@ -120,7 +163,7 @@ const Login = () => {
 
                 <div className="space-y-3">
                   <Label htmlFor="email" className="text-gray-700 font-medium">
-                    Email
+                    Email *
                   </Label>
                   <Input
                     id="email"
@@ -129,14 +172,16 @@ const Login = () => {
                     placeholder="Enter your email"
                     value={formData.email}
                     onChange={handleChange}
-                    className="h-12 focus:ring-2 ring-primary/50 border-gray-300 rounded-lg [&::-webkit-credentials-auto-fill-button]:hidden"
+                    className="h-12 focus:ring-2 ring-primary/50 border-gray-300 rounded-lg"
                     required
+                    disabled={isSubmitting}
+                    autoComplete="username"
                   />
                 </div>
                 
                 <div className="space-y-3">
                   <Label htmlFor="password" className="text-gray-700 font-medium">
-                    Password
+                    Password *
                   </Label>
                   <Input
                     id="password"
@@ -145,34 +190,23 @@ const Login = () => {
                     placeholder="Enter your password"
                     value={formData.password}
                     onChange={handleChange}
-                    className="h-12 focus:ring-2 ring-primary/50 border-gray-300 rounded-lg [&::-webkit-credentials-auto-fill-button]:hidden"
+                    className="h-12 focus:ring-2 ring-primary/50 border-gray-300 rounded-lg"
                     required
+                    disabled={isSubmitting}
+                    autoComplete="current-password"
                   />
                 </div>
-
 
                 <Button 
                   type="submit" 
                   className="w-full h-12 bg-primary hover:bg-primary-dark rounded-lg font-semibold text-white shadow-md hover:shadow-lg transition-all"
-                  disabled={loading}
+                  disabled={isSubmitting}
                 >
-                  {loading ? (
-                    <span className="flex items-center justify-center">
-                      <svg 
-                        className="animate-spin h-5 w-5 mr-3" 
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          className="fill-current text-white"
-                          d="M12 22C17.5228 22 22 17.5228 22 12H19C19 15.866 15.866 19 12 19V22Z"
-                        />
-                        <path
-                          className="fill-current text-white opacity-75"
-                          d="M19 12C19 8.13401 15.866 5 12 5V2C17.5228 2 22 6.47715 22 12H19ZM12 5C8.13401 5 5 8.13401 5 12H2C2 6.47715 6.47715 2 12 2V5Z"
-                        />
-                      </svg>
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                       Authenticating...
-                    </span>
+                    </>
                   ) : (
                     "Login"
                   )}

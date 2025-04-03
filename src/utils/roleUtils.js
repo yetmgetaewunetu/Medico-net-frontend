@@ -25,6 +25,8 @@ export const hasAnyRole = (user, requiredRoles) => {
 // Get route prefix based on user role
 export const getRoutePrefix = (role) => {
   switch (role) {
+    case ROLES.SYSTEM_ADMIN:
+      return "/system-admin"
     case ROLES.ADMIN:
       return "/admin"
     case ROLES.HOSPITAL_ADMIN:

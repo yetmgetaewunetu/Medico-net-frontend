@@ -14,7 +14,11 @@ import {
 import { Badge } from "../ui/badge"
 
 const Navbar = () => {
-  const { user, logout } = useAuth()
+  // const { user, logout } = useAuth()
+  const user = {
+    role : "doctor",
+    name : "doctor"
+  }
   const navigate = useNavigate()
 
   const handleLogout = () => {

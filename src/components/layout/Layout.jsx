@@ -5,22 +5,22 @@ import Navbar from "./Navbar"
 import { useEffect } from "react"
 
 const Layout = () => {
-  const { isAuthenticated, loading } = useAuth()
+  // const { isAuthenticated, loading } = useAuth()
   const navigate = useNavigate()
 
-  useEffect(() => {
-    if (!loading && !isAuthenticated) {
-      navigate("/login")
-    }
-  }, [loading, isAuthenticated, navigate])
+  // useEffect(() => {
+  //   if (!loading && !isAuthenticated) {
+  //     navigate("/login")
+  //   }
+  // }, [loading, isAuthenticated, navigate])
 
-  if (loading) {
-    return <div className="flex items-center justify-center h-screen">Loading...</div>
-  }
+  // if (loading) {
+  //   return <div className="flex items-center justify-center h-screen">Loading...</div>
+  // }
 
-  if (!isAuthenticated) {
-    return null // Prevent rendering until redirect completes
-  }
+  // if (!isAuthenticated) {
+  //   return null // Prevent rendering until redirect completes
+  // }
 
   return (
     <div className="flex h-screen bg-gray-50">

@@ -10,14 +10,15 @@ import LabTechnicianRoutes from "./routes/LabTechnicianRoutes"
 import PharmacistRoutes from "./routes/PharmacistRoutes"
 import TriageRoutes from "./routes/TriageRoutes"
 import ReceptionistRoutes from "./routes/ReceptionistRoutes"
+import SystemAdminRoutes from "./routes/SystemAdminRoutes"
 import { Toaster } from "sonner"
 // import { ThemeProvider } from "./components/theme-provider"
 
 function App() {
   return (
     // <ThemeProvider defaultTheme="light">
-    <Router>
-      <AuthProvider>
+      <Router>
+      {/* <AuthProvider> */}
           <Routes>
             <Route path="/login" element={<Login />} />
             <Route path="/unauthorized" element={<Unauthorized />} />
@@ -27,6 +28,9 @@ function App() {
 
               {/* Hospital Admin Routes */}
               {/* <Route path="/hospital-admin/*" element={<HospitalAdminRoutes />} /> */}
+
+              {/* System Admin Routes */}
+            <Route path="/system-admin/*" element={<SystemAdminRoutes />} />
 
               {/* Doctor Routes */}
               <Route path="/doctor/*" element={<DoctorRoutes />} />
@@ -48,7 +52,7 @@ function App() {
             </Route>
           </Routes>
         <Toaster />
-      </AuthProvider>
+      {/* </AuthProvider> */}
     </Router>
     // </ThemeProvider>
   )

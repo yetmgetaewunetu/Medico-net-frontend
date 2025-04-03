@@ -6,131 +6,98 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from ".
 import { Input } from "../../components/ui/input"
 import { Search } from "lucide-react"
 
-const PatientRecord = () => {
+const Dashboard = () => {
   const navigate = useNavigate()
   const [searchTerm, setSearchTerm] = useState("")
 
   // Sample patient data
   const patients = [
-    {
-      id: "001123",
-      name: "Mary Joseph",
-      status: "Pending",
-      lastAppointment: "20/10/2022",
-    },
-    {
-      id: "001123",
-      name: "Amala Jones",
-      status: "Ready",
-      lastAppointment: "11/10/2022",
-    },
-    {
-      id: "001123",
-      name: "Damilola Oyin",
-      status: "Dismissed",
-      lastAppointment: "9/10/2022",
-    },
-    {
-      id: "001123",
-      name: "Selim Jubril",
-      status: "Awaiting Lab Result",
-      lastAppointment: "12/10/2022",
-    },
-    {
-      id: "001123",
-      name: "Paul Christian",
-      status: "Dismissed",
-      lastAppointment: "22/10/2022",
-    },
-    {
-      id: "001123",
-      name: "Rosabel Briggs",
-      status: "Pending",
-      lastAppointment: "23/10/2022",
-    },
-    {
-      id: "001123",
-      name: "Tina Adekeye",
-      status: "Pending",
-      lastAppointment: "19/10/2022",
-    },
-    {
-      id: "001123",
-      name: "Mark Bossman",
-      status: "Pending",
-      lastAppointment: "17/10/2022",
-    },
+    { id: "0001223", name: "Dianne Russell", gender: "Male" },
+    { id: "0001223", name: "Bessie Cooper", gender: "Female" },
+    { id: "0001223", name: "Marvin McKinney", gender: "Male" },
+    { id: "0001223", name: "Esther Howard", gender: "Male" },
+    { id: "0001223", name: "Marvin McKinney", gender: "Male" },
   ]
-
-  const getStatusColor = (status) => {
-    switch (status) {
-      case "Pending":
-        return "bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs"
-      case "Ready":
-        return "bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-xs"
-      case "Dismissed":
-        return "bg-red-100 text-red-800 px-3 py-1 rounded-full text-xs"
-      case "Awaiting Lab Result":
-        return "bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-xs"
-      default:
-        return "bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-xs"
-    }
-  }
-
-  const filteredPatients = patients.filter(
-    (patient) =>
-      patient.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      patient.id.includes(searchTerm) ||
-      patient.status.toLowerCase().includes(searchTerm.toLowerCase()),
-  )
 
   const handlePatientClick = (patientId) => {
     navigate(`/doctor/patient-record/view/${patientId}`)
   }
 
+  const filteredPatients = patients.filter(
+    (patient) => patient.name.toLowerCase().includes(searchTerm.toLowerCase()) || patient.id.includes(searchTerm),
+  )
+
   return (
-    <div className="p-6 bg-gray-50 min-h-screen">
-      <div className="relative w-full mb-4">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
-        <Input
-          placeholder="Search for anything here..."
-          className="pl-10"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
+    <div className="space-y-6 p-6 bg-gray-50 min-h-screen">
+      <div className="flex flex-col">
+        <h1 className="text-2xl font-bold">Welcome Dr Abel</h1>
+        <p className="text-muted-foreground">A quick data overview of the inventory.</p>
       </div>
 
-      <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-        <Table>
-          <TableHeader className="bg-gray-50">
-            <TableRow>
-              <TableHead>Patient ID</TableHead>
-              <TableHead>Name</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Last Appointment</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {filteredPatients.map((patient, index) => (
-              <TableRow
-                key={index}
-                className="cursor-pointer hover:bg-gray-50"
-                onClick={() => handlePatientClick(patient.id)}
-              >
-                <TableCell>{patient.id}</TableCell>
-                <TableCell>{patient.name}</TableCell>
-                <TableCell>
-                  <span className={getStatusColor(patient.status)}>{patient.status}</span>
-                </TableCell>
-                <TableCell>{patient.lastAppointment}</TableCell>
+      <div className="bg-white p-6 rounded-lg shadow-sm">
+        <div className="mb-6">
+          <div className="bg-blue-50 p-6 rounded-lg">
+            <h2 className="text-lg font-semibold mb-2">Assigned Patients</h2>
+            <div className="flex items-center justify-between">
+              <span className="text-4xl font-bold">96</span>
+              <div className="h-16 w-28">
+                <svg viewBox="0 0 100 30" className="w-full h-full">
+                  <path
+                    d="M0,30 L5,28 L10,25 L15,26 L20,23 L25,25 L30,20 L35,22 L40,18 L45,15 L50,18 L55,15 L60,12 L65,15 L70,10 L75,8 L80,12 L85,8 L90,5 L95,8 L100,5"
+                    fill="none"
+                    stroke="#D1E9FA"
+                    strokeWidth="2"
+                  />
+                  <path
+                    d="M0,30 L5,28 L10,25 L15,26 L20,23 L25,25 L30,20 L35,22 L40,18 L45,15 L50,18 L55,15 L60,12 L65,15 L70,10 L75,8 L80,12 L85,8 L90,5 L95,8 L100,5"
+                    fill="rgba(209, 233, 250, 0.5)"
+                  />
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="relative w-full mb-4">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+          <Input
+            placeholder="Search patients..."
+            className="pl-10"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
+
+        <div className="overflow-hidden rounded-md border">
+          <Table>
+            <TableHeader className="bg-gray-50">
+              <TableRow>
+                <TableHead className="w-[50px]">#</TableHead>
+                <TableHead className="w-[150px]">PATIENT ID</TableHead>
+                <TableHead>PATIENT</TableHead>
+                <TableHead>GENDER</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHeader>
+            <TableBody>
+              {filteredPatients.map((patient, index) => (
+                <TableRow
+                  key={index}
+                  className={`cursor-pointer hover:bg-gray-50 ${index === 2 ? "bg-blue-50" : ""}`}
+                  onClick={() => handlePatientClick(patient.id)}
+                >
+                  <TableCell>{index + 1}</TableCell>
+                  <TableCell>{patient.id}</TableCell>
+                  <TableCell>{patient.name}</TableCell>
+                  <TableCell>{patient.gender}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
       </div>
     </div>
   )
 }
 
-export default PatientRecord
+export default Dashboard
 
