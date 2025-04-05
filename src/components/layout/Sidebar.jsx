@@ -22,14 +22,14 @@ import { cn } from "../../lib/utils"
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar"
 
 const Sidebar = () => {
-  // const { user, logout } = useAuth()
+  const { user, logout } = useAuth()
+  
+  // console.log("user", user.role)
+  
   const location = useLocation()
   const navigate = useNavigate()
 
-  const user = {
-    role : "systemAdmin",
-    name : "adfsdfs"
-  }
+
   const routePrefix = getRoutePrefix(user?.role)
 
   const isActive = (path) => {
@@ -40,6 +40,7 @@ const Sidebar = () => {
     logout()
     navigate("/login")
   }
+  
 
   return (
     <div className="w-60 h-screen flex flex-col sidebar-gradient text-white">
@@ -65,9 +66,13 @@ const Sidebar = () => {
                   ? "Triage Nurse"
                   : user?.role === "receptionist"
                     ? "Receptionist"
-                    : user?.role === "systemAdmin"
+                    : user?.role === "admin"
                       ? "System Administrator"
-                      : user?.role || "Role"}
+                    : user?.role === "hospitaladministrator"
+                      ? "Hospital Admin"
+                      : user?.role || "Role"
+                      
+                      }
           </p>
         </div>
       </div>
@@ -76,7 +81,7 @@ const Sidebar = () => {
       <nav className="flex-1 overflow-y-auto py-4">
         <ul className="space-y-1 px-2">
           {/* System Admin specific links */}
-          {user?.role === "systemAdmin" && (
+          {user?.role === "admin" && (
             <>
               {/* Dashboard */}
               <li>
@@ -342,7 +347,7 @@ const Sidebar = () => {
           )}
 
           {/* Admin specific links */}
-          {user?.role === "admin" && (
+          {user?.role === "hospitaladministrator" && (
             <>
               {/* Dashboard */}
               <li>
@@ -457,7 +462,7 @@ const Sidebar = () => {
           )}
 
           {/* Admin specific links */}
-          {user?.role === "admin" && (
+          {user?.role === "hospitaladministrator" && (
             <>
               {/* Dashboard */}
               <li>

@@ -19,7 +19,7 @@ const AdminForm = ({ hospitalId, hospitalName, onAdminCreated, onFinish }) => {
     phoneNumber: "",
     password: "",
     confirmPassword: "",
-    role: "HospitalAdministrator",
+    role: "hospitaladministratoristrator",
     hospitalID: hospitalId,
   })
 
@@ -75,7 +75,7 @@ const AdminForm = ({ hospitalId, hospitalName, onAdminCreated, onFinish }) => {
         phoneNumber: "",
         password: "",
         confirmPassword: "",
-        role: "HospitalAdministrator",
+        role: "hospitaladministratoristrator",
         hospitalID: hospitalId,
       })
     } catch (error) {

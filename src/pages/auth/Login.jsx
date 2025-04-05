@@ -1,92 +1,87 @@
-import { useState } from "react";
-import { useAuth } from "../../context/AuthContext";
-import { Button } from "../../components/ui/button";
-import { Input } from "../../components/ui/input";
-import { Label } from "../../components/ui/label";
-import { 
-  Card, 
-  CardContent, 
-  CardDescription, 
-  CardFooter, 
-  CardHeader, 
-  CardTitle 
-} from "../../components/ui/card";
-import { Toaster, toast } from "sonner";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  CardFooter,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { toast, Toaster } from "sonner";
 import { Loader2 } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
+import { useState } from "react";
 
-const Login = () => {
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-    role: ""
-  });
+const formSchema = z.object({
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(1, "Password is required"),
+  role: z.string().min(1, "Please select a role"),
+});
+
+export default function Login() {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  // const { login, error, clearError } = useAuth();
+  const { login, error, clearError } = useAuth();
+
+  const form = useForm({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+      role: "",
+    },
+  });
 
   const roles = [
     { value: "doctor", label: "Doctor" },
     { value: "labtechnician", label: "Lab Technician" },
     { value: "pharmacist", label: "Pharmacist" },
     { value: "triage", label: "Triage Nurse" },
-    { value: "receptionist", label: "Receptionist" }
+    { value: "receptionist", label: "Receptionist" },
+    { value: "admin", label: "Admin" },
+    { value: "hospitaladministrator", label: "Hospital-Admin" },
   ];
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const onSubmit = async (data) => {
     clearError();
-    
-    // Validate form
-    if (!formData.email || !formData.password || !formData.role) {
-      toast.error("Please fill all required fields");
-      return;
-    }
+    setIsSubmitting(true);
 
     try {
-      setIsSubmitting(true);
-      const userData = await login(formData.email, formData.password, formData.role);
-      
-      // Show welcome message if login succeeds
-      toast.success(`Welcome back, ${userData.firstName || userData.email}!`, {
-        description: `You are logged in as ${userData.role}`
+      const user = await login(data.email, data.password, data.role);
+      toast.success(`Welcome back, ${user.firstName || user.email}!`, {
+        description: `You are logged in as ${user.role}`,
       });
     } catch (err) {
-      // Handle specific error cases
-      if (err.message.includes("User not found")) {
+      const msg = err.message || "Login failed";
+
+      if (msg.includes("User not found")) {
         toast.error("Account not found", {
-          description: "Please check your email or register for an account",
-          action: {
-            label: "Register",
-            onClick: () => {/* Navigate to registration page */}
-          }
+          description: "Please check your email or register.",
         });
-      } else if (err.message.includes("Invalid password")) {
+      } else if (msg.includes("Invalid password")) {
         toast.error("Incorrect password", {
-          description: "Please check your password and try again",
-          action: {
-            label: "Reset password",
-            onClick: () => {/* Navigate to password reset */}
-          }
+          description: "Please try again.",
         });
-      } else if (err.message.includes("Access denied")) {
-        toast.error("Role mismatch", {
-          description: err.message
-        });
-      } else if (err.message.includes("NetworkError") || err.message.includes("Failed to fetch")) {
+      } else if (msg.includes("Access denied")) {
+        toast.error("Role mismatch", { description: msg });
+      } else if (msg.includes("NetworkError") || msg.includes("Failed to fetch")) {
         toast.error("Connection error", {
-          description: "Cannot connect to server. Please check your network and try again."
+          description: "Cannot connect to server. Check your network.",
         });
       } else {
-        toast.error("Login failed", {
-          description: err.message || "Please try again later"
-        });
+        toast.error("Login failed", { description: msg });
       }
     } finally {
       setIsSubmitting(false);
@@ -94,31 +89,27 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#EAF7F8] to-[#D2EBED] px-4 sm:px-6 lg:px-8">
-      <Toaster position="top-center" richColors expand={false} />
-      
-      <div className="flex w-full max-w-6xl rounded-xl shadow-2xl overflow-hidden bg-white transform transition-all duration-300">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#EAF7F8] to-[#D2EBED] px-4">
+      <Toaster position="top-center" richColors />
+
+      <div className="flex w-full max-w-6xl rounded-xl shadow-2xl overflow-hidden bg-white">
         {/* Image Section */}
         <div className="hidden md:flex flex-1 relative">
-          <img 
-            src="/hospital.jpg" 
-            alt="Healthcare professionals working"
+          <img
+            src="/hospital.jpg"
+            alt="Healthcare professionals"
             className="w-full h-full object-cover brightness-90"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-blue-900/40 to-blue-800/30">
-            <div className="p-8 text-white">
-              <div className="mb-12">
-                <h2 className="text-2xl font-bold">Ethiopian Healthcare Platform</h2>
-                <p className="text-sm opacity-90 mt-2">
-                  Unified Medical Record System
-                </p>
-              </div>
-              <div className="mt-auto absolute bottom-8 left-8">
-                <p className="text-xl font-semibold">Secure Access Portal</p>
-                <p className="text-sm mt-2 opacity-90 max-w-[300px]">
-                  Authorized medical personnel only
-                </p>
-              </div>
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-900/40 to-blue-800/30 p-8 text-white flex flex-col justify-between">
+            <div>
+              <h2 className="text-2xl font-bold">Ethiopian Healthcare Platform</h2>
+              <p className="text-sm opacity-90 mt-2">Unified Medical Record System</p>
+            </div>
+            <div>
+              <p className="text-xl font-semibold">Secure Access Portal</p>
+              <p className="text-sm mt-2 opacity-90 max-w-[300px]">
+                Authorized medical personnel only
+              </p>
             </div>
           </div>
         </div>
@@ -127,120 +118,111 @@ const Login = () => {
         <div className="flex-1 flex justify-center items-center p-8 md:p-12">
           <Card className="w-full max-w-md border-none shadow-none bg-transparent">
             <CardHeader className="space-y-4 text-center">
-              <div className="mb-6">
-                <CardTitle className="text-3xl font-bold text-gray-800 tracking-tight">
-                  Fayda Mediconet
-                </CardTitle>
-                <CardDescription className="text-gray-600 mt-2">
-                  Digital Healthcare Access Platform
-                </CardDescription>
-              </div>
+              <CardTitle className="text-3xl font-bold text-gray-800">Fayda Mediconet</CardTitle>
+              <CardDescription className="text-gray-600">
+                Digital Healthcare Access Platform
+              </CardDescription>
             </CardHeader>
-            
+
             <CardContent>
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="space-y-3">
-                  <Label htmlFor="role" className="text-gray-700 font-medium">
-                    Role *
-                  </Label>
-                  <select
-                    id="role"
+              <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                  <FormField
+                    control={form.control}
                     name="role"
-                    value={formData.role}
-                    onChange={handleChange}
-                    className="h-12 w-full focus:ring-2 ring-primary/50 border border-gray-300 rounded-lg px-4 bg-white appearance-none"
-                    required
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Role *</FormLabel>
+                        <FormControl>
+                          <select
+                            className="h-12 w-full border border-gray-300 rounded-lg px-4"
+                            disabled={isSubmitting}
+                            {...field}
+                          >
+                            <option value="">Select your role</option>
+                            {roles.map((role) => (
+                              <option key={role.value} value={role.value}>
+                                {role.label}
+                              </option>
+                            ))}
+                          </select>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Email *</FormLabel>
+                        <FormControl>
+                          <Input
+                            {...field}
+                            type="email"
+                            placeholder="Enter your email"
+                            disabled={isSubmitting}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="password"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Password *</FormLabel>
+                        <FormControl>
+                          <Input
+                            {...field}
+                            type="password"
+                            placeholder="Enter your password"
+                            disabled={isSubmitting}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <Button
+                    type="submit"
+                    className="w-full h-12"
                     disabled={isSubmitting}
                   >
-                    <option value="">Select your role</option>
-                    {roles.map((role) => (
-                      <option key={role.value} value={role.value}>
-                        {role.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="space-y-3">
-                  <Label htmlFor="email" className="text-gray-700 font-medium">
-                    Email *
-                  </Label>
-                  <Input
-                    id="email"
-                    name="email"
-                    type="email"
-                    placeholder="Enter your email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    className="h-12 focus:ring-2 ring-primary/50 border-gray-300 rounded-lg"
-                    required
-                    disabled={isSubmitting}
-                    autoComplete="username"
-                  />
-                </div>
-                
-                <div className="space-y-3">
-                  <Label htmlFor="password" className="text-gray-700 font-medium">
-                    Password *
-                  </Label>
-                  <Input
-                    id="password"
-                    name="password"
-                    type="password"
-                    placeholder="Enter your password"
-                    value={formData.password}
-                    onChange={handleChange}
-                    className="h-12 focus:ring-2 ring-primary/50 border-gray-300 rounded-lg"
-                    required
-                    disabled={isSubmitting}
-                    autoComplete="current-password"
-                  />
-                </div>
-
-                <Button 
-                  type="submit" 
-                  className="w-full h-12 bg-primary hover:bg-primary-dark rounded-lg font-semibold text-white shadow-md hover:shadow-lg transition-all"
-                  disabled={isSubmitting}
-                >
-                  {isSubmitting ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Authenticating...
-                    </>
-                  ) : (
-                    "Login"
-                  )}
-                </Button>
-              </form>
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Authenticating...
+                      </>
+                    ) : (
+                      "Login"
+                    )}
+                  </Button>
+                </form>
+              </Form>
             </CardContent>
 
-            <CardFooter className="flex flex-col items-center gap-3 text-center mt-6">
-              <div className="text-sm text-gray-500 space-y-1">
-                <p>24/7 Technical Support</p>
-                <div className="flex flex-col gap-1">
-                  <a 
-                    href="mailto:support@faydamediconet.et" 
-                    className="text-primary hover:text-primary-dark font-medium"
-                  >
-                    support@faydamediconet.et
-                  </a>
-                  <a 
-                    href="tel:+251911234567" 
-                    className="text-primary hover:text-primary-dark font-medium"
-                  >
-                    +251 911 234 567
-                  </a>
-                </div>
-                <p className="mt-2 text-xs">
-                  All access attempts are monitored and recorded
-                </p>
+            <CardFooter className="flex flex-col items-center gap-3 text-center mt-6 text-sm text-gray-500">
+              <p>24/7 Technical Support</p>
+              <div className="flex flex-col gap-1">
+                <a href="mailto:support@faydamediconet.et" className="text-primary font-medium">
+                  support@faydamediconet.et
+                </a>
+                <a href="tel:+251911234567" className="text-primary font-medium">
+                  +251 911 234 567
+                </a>
               </div>
+              <p className="text-xs mt-2">All access attempts are monitored and recorded</p>
             </CardFooter>
           </Card>
         </div>
       </div>
     </div>
   );
-};
-
-export default Login;
+}

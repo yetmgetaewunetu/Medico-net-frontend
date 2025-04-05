@@ -1,4 +1,3 @@
-// src/context/AuthContext.jsx
 import { createContext, useContext, useState } from 'react';
 import api from '../services/auth';
 import { getRoutePrefix } from '../utils/roleUtils';
@@ -17,9 +16,12 @@ export function AuthProvider({ children }) {
       setLoading(true);
       setError(null);
       const userData = await api.login(email, password, role);
+      userData.role = userData.role.toLowerCase(); // Ensure role is in lowercase
       setUser(userData);
       
       const routePrefix = getRoutePrefix(role);
+      console.log('Route prefix:', routePrefix); // Debugging line
+      // eslint-disable-next-line no-constant-binary-expression
       navigate(routePrefix || '/');
       
       return userData;

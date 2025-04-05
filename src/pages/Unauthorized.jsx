@@ -5,12 +5,9 @@ import { Button } from "../components/ui/button"
 import { AlertTriangle } from "lucide-react"
 
 const Unauthorized = () => {
-  // const { user } = useAuth()
+   const { user } = useAuth()
   const navigate = useNavigate()
-  const user = {
-    role : "systemAdmin",
-    name : "adfsdfs"
-  }
+ 
   const handleGoBack = () => {
     if (user) {
       const routePrefix = getRoutePrefix(user.role)

@@ -1,4 +1,3 @@
-"use client"
 
 import { useState, useEffect } from "react"
 import { Link } from "react-router-dom"
@@ -79,7 +78,7 @@ const AdminManagement = () => {
     <div className="p-6">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Hospital Admin Management</h1>
-        <Link to="/system-admin/admin-management/add">
+        <Link to="/admin/admin-management/add">
           <Button>
             <Plus className="mr-2 h-4 w-4" />
             Add Admin
@@ -132,7 +131,7 @@ const AdminManagement = () => {
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuItem>
-                          <Link to={`/system-admin/admin-management/edit/${admin.id}`} className="w-full">
+                          <Link to={`/admin/admin-management/edit/${admin.id}`} className="w-full">
                             Edit
                           </Link>
                         </DropdownMenuItem>

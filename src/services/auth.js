@@ -26,7 +26,8 @@ const api = {
       if (!data.success) {
         throw new Error(data.msg || 'Login failed');
       }
-
+      console.log("🚀 ~ login ~ role:", data.role)
+       
       return {
         id: data.userId,
         email: data.email,
@@ -35,6 +36,8 @@ const api = {
         gender: data.gender,
         role: data.role
       };
+      
+        
     } catch (error) {
       console.error('API login error:', error);
       throw error;

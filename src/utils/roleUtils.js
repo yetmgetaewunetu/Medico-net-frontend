@@ -1,7 +1,8 @@
 // Role constants
 export const ROLES = {
   ADMIN: "admin",
-  HOSPITAL_ADMIN: "hospital_admin",
+  
+  HOSPITAL_ADMIN: "hospitaladministrator",
   DOCTOR: "doctor",
   NURSE: "nurse",
   RECEPTIONIST: "receptionist",
@@ -13,6 +14,7 @@ export const ROLES = {
 // Check if user has required role
 export const hasRole = (user, requiredRole) => {
   if (!user) return false
+  console.log("🚀 ~ hasRole ~  user.role:",  user.role)
   return user.role === requiredRole
 }
 
@@ -25,12 +27,11 @@ export const hasAnyRole = (user, requiredRoles) => {
 // Get route prefix based on user role
 export const getRoutePrefix = (role) => {
   switch (role) {
-    case ROLES.SYSTEM_ADMIN:
-      return "/system-admin"
+  
     case ROLES.ADMIN:
       return "/admin"
     case ROLES.HOSPITAL_ADMIN:
-      return "/hospital-admin"
+      return "/hospitaladministrator"
     case ROLES.DOCTOR:
       return "/doctor"
     case ROLES.NURSE:

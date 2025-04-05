@@ -2,12 +2,12 @@
 
 import { Routes, Route, Navigate } from "react-router-dom"
 import { useAuth } from "../context/AuthContext"
-import { ROLES } from "../utils/roleUtils"
+import { ROLES } from "../utils/roleUtils" 
 // import Dashboard from "../pages/hospital-admin/Dashboard"
 import StaffManagement from "../pages/hospital-admin/StaffManagement"
 import PatientRecord from "../pages/hospital-admin/PatientRecord"
 
-const HospitalAdminRoutes = () => {
+const hospitaladministratorRoutes = () => {
   const { user } = useAuth()
 
   // Check if user is hospital admin
@@ -17,7 +17,7 @@ const HospitalAdminRoutes = () => {
 
   return (
     <Routes>
-      {/* <Route path="/" element={<Dashboard />} /> */}
+      {/* <Route path="/" element={<Dashboard />} />  */}
       <Route path="/" element={<StaffManagement />} />
       <Route path="/patient-record" element={<PatientRecord />} />
       <Route path="*" element={<Navigate to="/hospital-admin" replace />} />
@@ -25,5 +25,5 @@ const HospitalAdminRoutes = () => {
   )
 }
 
-export default HospitalAdminRoutes
+export default hospitaladministratorRoutes
 
